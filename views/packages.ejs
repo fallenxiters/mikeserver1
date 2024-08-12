@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="packages.css">
+    <link rel="icon" href="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/25D3BC22-D748-4DFF-B7DF-28D9F7910609.PNG?v=1716119018948"/>
+    <title>MikeServer - Packages</title>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar close" id="sidebar">
+                <div class="profile">
+            <img src="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/1.png?v=1716788699094" alt="Profile Picture">
+            <div class="profile-info">
+<div class="name" style="text-align: left; white-space: nowrap; overflow: hidden;"><%= username %></div>
+<div class="credits" style="color: #808080; text-align: left; white-space: nowrap; overflow: hidden;">Creditos: <%= creditsAmount %></div>
+
+
+
+            </div>
+        </div>
+
+        <div class="side-menu">
+          <div class="section-title">Dashboard</div>
+          <li ><a href="/dashboard"><i class='bx bx-home'></i>Dashboard</a></li>
+            <div class="section-title">Utilizadores</div>
+            <ul>
+                <li ><a href="/register"><i class='bx bx-plus'></i>Criar Key</a></li>
+                <li><a href="/reset"><i class='bx bx-reset'></i>Resetar Key</a></li>
+                <li><a href="/remove"><i class='bx bx-minus'></i>Remover Key</a></li>
+                <li  ><a href="/users"><i class='bx bx-key'></i>Ver Keys</a></li>
+            </ul>
+          <% if (user.vendedor_nome === 'MIKE IOS') { %>
+            <div class="section-title">Administradores</div>
+            <ul>
+                                                 <li><a href="/add-admins"><i class='bx bx-user-check'></i>Criar Admins</a></li>
+    <li><a href="/credits"><i class='bx bx-coin-stack'></i>Créditos</a></li>
+    <li><a href="/admins"><i class='bx bx-user'></i>Ver Admins</a></li>
+                <li class="active"  ><a href="/packages"><i class='bx bx-package'></i>Packages</a></li>
+            </ul>
+                          <% } %>
+            <ul>
+              <div class="section-title">Outros</div>
+                <li class="logout"><a href="/logout" class="logout"><i class='bx bx-log-out-circle'></i>Sair</a></li>
+            </ul>
+        </div>
+    </div>
+    <!-- End of Sidebar -->
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Navbar -->
+        <nav>
+            <i class='bx bx-menu'></i>
+            <form action="#">
+                <div class="form-input">
+                    <button style="display: none;"><i></i></button>
+                </div>
+            </form>
+<a href="" class="profile">
+    <img src="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/1.png?v=1716788699094" style="width: 26px; height: 26px; border-radius: 50%;">
+    <span id="username"><%= username %></span>
+</a>
+        </nav>
+        <!-- End of Navbar -->
+
+<main>
+    <div class="table-container">
+        <div class="header">
+            <h3>Packages</h3>
+        </div>
+        <div class="table-responsive">
+            <button class="btn-createpackage">Criar Package</button>
+            <table class="acoes-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Versão</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% packages.forEach(package => { %>
+                        <tr>
+                            <td data-label="ID"><%= package.id %></td>
+                            <td data-label="Nome"><%= package.package %></td>
+                            <td data-label="Versão"><%= package.version %></td>
+                            <td data-label="Status"><span class="<%= package.status === 0 ? 'ativo' : 'desativado' %>"><%= package.status === 0 ? 'Ativo' : 'Desativado' %></span></td>
+                            <td data-label="Ações">
+                                <i class='bx bx-dots-vertical-rounded action-icon' onclick="toggleActionsMenu(event)" tabindex="0"></i>
+                                <div class="actions-menu">
+                                    <a href="" class="see-token" data-token="<%= package.token %>"><i class='bx bx-show'></i>Token</a>
+                                    <a href="" class="create-notification" data-package-id="<%= package.id %>"><i class='bx bx-bell'></i>Criar Notificação</a>
+                                    <a href="" class="change-status-package" data-package="<%= package.package %>"><i class='bx bx-pause'></i>Mudar Status</a>
+                                    <a href="" class="edit-package" data-id="<%= package.id %>" data-name="<%= package.package %>" data-version="<%= package.version %>" data-seconds="<%= package.seconds %>" data-link="<%= package.link %>"><i class='bx bx-edit'></i>Editar</a>
+                                    <a href="" class="reset-keys" data-package="<%= package.package %>"><i class='bx bx-reset'></i>Resetar Keys</a>
+                                    <a href="" class="delete-package" data-id="<%= package.id %>"><i class='bx bx-trash'></i>Deletar</a>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+        <script src="reset.js"></script>
+        <script>
+            function toggleActionsMenu(event) {
+                event.stopPropagation();
+                const menu = event.currentTarget.closest('td').querySelector('.actions-menu');
+                const allMenus = document.querySelectorAll('.actions-menu');
+                allMenus.forEach(m => {
+                    if (m !== menu) {
+                        m.classList.remove('closing');
+                        m.style.display = 'none';
+                    }
+                });
+                if (menu.style.display === 'block') {
+                    menu.classList.add('closing');
+                    menu.addEventListener('animationend', () => {
+                        menu.style.display = 'none';
+                        menu.classList.remove('closing');
+                    }, { once: true });
+                } else {
+                    menu.style.display = 'block';
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    menu.style.top = `${rect.bottom + window.scrollY}px`;
+                    menu.style.left = `${rect.left + window.scrollX - menu.offsetWidth}px`;
+                }
+            }
+
+            document.addEventListener('click', function(event) {
+                const allMenus = document.querySelectorAll('.actions-menu');
+                allMenus.forEach(menu => {
+                    if (menu.style.display === 'block') {
+                        menu.classList.add('closing');
+                        menu.addEventListener('animationend', () => {
+                            menu.style.display = 'none';
+                            menu.classList.remove('closing');
+                        }, { once: true });
+                    }
+                });
+            });
+
+            document.querySelectorAll('.actions-menu').forEach(menu => {
+                menu.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+            });
+
+            document.querySelectorAll('.see-token').forEach(link => {
+                link.addEventListener("click", function(event) {
+                    event.preventDefault(); // Evita o comportamento padrão do link
+
+                    const token = this.getAttribute("data-token");
+
+                    Swal.fire({
+                        title: 'Package token',
+                        html: `
+                            <div style="display: flex; align-items: center; justify-content: center; margin-top: 10px;">
+                                <input id="keyField" type="text" value="${token}" readonly style="width: 70%; height: 40px; padding: 10px; border: 1px solid #555; border-radius: 5px; text-align: center; font-size: 1em; background-color: #1b1e21; color: #fff;">
+                                <button id="copyButton" class="swal2-confirm swal2-styled" style="width: auto; height: 40px; padding: 10px; margin-left: 10px; font-size: 1em; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                    <i class='bx bx-copy' style="font-size: 1.5em;"></i>
+                                </button>
+                            </div>`,
+                        background: '#343a40',
+                        color: '#fff', // Cor do texto
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            const copyButton = document.getElementById('copyButton');
+                            copyButton.addEventListener('click', () => {
+                                const keyField = document.getElementById('keyField');
+                                keyField.select();
+                                document.execCommand('copy');
+                                Swal.fire({
+                                    icon: 'success',
+                                    iconColor: '#28a745', // Verde mais vivo para o ícone de sucesso
+                                    title: 'Copiado!',
+                                    text: 'A key foi copiada para a área de transferência.',
+                                    timer: 2000,
+                                    showConfirmButton: false,
+                                    background: '#343a40',
+                                    color: '#fff' // Cor do texto
+                                });
+                            });
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll('.change-status-package').forEach(link => {
+                link.addEventListener("click", function(event) {
+                    event.preventDefault(); // Evita o comportamento padrão do link
+
+                    const package = this.getAttribute("data-package");
+                    const statusCell = this.closest("tr").querySelector("[data-label='Status'] span");
+                    const actionsMenu = this.closest(".actions-menu");
+
+                    // Enviar a key para o servidor
+                    fetch("/change-status-package", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ package: package })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Atualize a interface do usuário conforme necessário
+                            const newStatus = statusCell.classList.contains('ativo') ? 'Desativado' : 'Ativo';
+                            const newStatusClass = statusCell.classList.contains('ativo') ? 'desativado' : 'ativo';
+                            
+                            // Atualizar o texto e a classe da célula de status
+                            statusCell.textContent = newStatus;
+                            statusCell.className = newStatusClass;
+
+                            // Fechar o menu de ações
+                            actionsMenu.classList.add('closing');
+                            actionsMenu.addEventListener('animationend', () => {
+                                actionsMenu.style.display = 'none';
+                                actionsMenu.classList.remove('closing');
+                            }, { once: true });
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sucesso',
+                                text: 'Status mudado com sucesso',
+                                background: '#343a40',
+                                color: '#ffffff',
+                                confirmButtonColor: '#28a745'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro',
+                                text: 'Falha ao mudar o status',
+                                background: '#343a40',
+                                color: '#ffffff',
+                                confirmButtonColor: '#dc3545'
+                            });
+                        }
+                    })
+                    .catch(error => console.error("Erro:", error));
+                });
+            });
+
+document.querySelectorAll('.edit-package').forEach(link => {
+    link.addEventListener('click', function(event) {
+        event.preventDefault(); // Evita o comportamento padrão do link
+
+        const id = this.getAttribute('data-id');
+        const currentName = this.getAttribute('data-name');
+        const currentVersion = this.getAttribute('data-version');
+        const currentSeconds = this.getAttribute('data-seconds');
+        const currentLink = this.getAttribute('data-link');
+
+        Swal.fire({
+            title: 'Editar Package',
+            html: `
+                <div style="text-align: center;">
+                    <label for="packageName" style="display: block; margin-bottom: 3px; color: #aaa; font-size: 14px; text-align: left; width: 80%; margin: 0 auto;">Nome do Package</label>
+                    <input id="packageName" type="text" value="${currentName}" class="swal2-input" style="width: 80%; box-sizing: border-box; background-color: #2c2f33; color: #fff; font-size: 14px; margin-bottom: 10px; padding: 5px; border-radius: 5px;">
+
+                    <label for="packageLink" style="display: block; margin-bottom: 3px; color: #aaa; font-size: 14px; text-align: left; width: 80%; margin: 0 auto;">Link da IPA</label>
+                    <input id="packageLink" type="text" value="${currentLink}" class="swal2-input" style="width: 80%; box-sizing: border-box; background-color: #2c2f33; color: #fff; font-size: 14px; margin-bottom: 10px; padding: 5px; border-radius: 5px;">
+                
+                    <label for="packageVersion" style="display: block; margin-bottom: 3px; color: #aaa; font-size: 14px; text-align: left; width: 80%; margin: 0 auto;">Versão do Package</label>
+                    <input id="packageVersion" type="text" value="${currentVersion}" class="swal2-input" style="width: 80%; box-sizing: border-box; background-color: #2c2f33; color: #fff; font-size: 14px; margin-bottom: 10px; padding: 5px; border-radius: 5px;">
+                    
+                    <label for="packageSeconds" style="display: block; margin-bottom: 3px; color: #aaa; font-size: 14px; text-align: left; width: 80%; margin: 0 auto;">Segundos Restantes (mínimo 60, máximo 300)</label>
+                    <input id="packageSeconds" type="number" min="60" max="300" value="${currentSeconds}" class="swal2-input" style="width: 80%; box-sizing: border-box; background-color: #2c2f33; color: #fff; font-size: 14px; margin-bottom: 10px; padding: 5px; border-radius: 5px;">
+                </div>`,
+            showCancelButton: true,
+            confirmButtonText: 'Salvar',
+            cancelButtonText: 'Cancelar',
+            background: '#343a40',
+            color: '#fff',
+            preConfirm: () => {
+                let newName = document.getElementById('packageName').value;
+                const newVersion = document.getElementById('packageVersion').value;
+                const newLink = document.getElementById('packageLink').value;
+                const newSeconds = parseInt(document.getElementById('packageSeconds').value, 10);
+
+                // Remove espaços em branco no início e no final e substitui múltiplos espaços por um único espaço
+                newName = newName.trim().replace(/\s+/g, ' ');
+
+                // Verifica se a versão está no formato correto
+                const versionPattern = /^\d+(\.\d+)*$/;
+                if (!versionPattern.test(newVersion)) {
+                    Swal.showValidationMessage('A versão deve estar no formato número.ponto.número (ex: 1.0, 1.0.1, 1.0.0.1)');
+                    return false;
+                }
+
+                // Verifica se o link é um URL válido
+                try {
+                    new URL(newLink);
+                } catch (_) {
+                    Swal.showValidationMessage('Digite um link válido');
+                    return false;
+                }
+
+                if (newSeconds < 60 || newSeconds > 300 || isNaN(newSeconds)) {
+                    Swal.showValidationMessage('Segundos Restantes deve estar entre 60 e 300');
+                    return false;
+                }
+
+                return { id, name: newName, version: newVersion, packageLink: newLink, remainingSeconds: newSeconds };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const { id, name, version, packageLink, remainingSeconds } = result.value;
+                console.log('Enviando dados para atualização:', { id, name, version, packageLink, remainingSeconds }); // Log de depuração
+                fetch('/update-package', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id, name, version, packageLink, remainingSeconds })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Sucesso',
+                            text: 'Package atualizado com sucesso',
+                            background: '#343a40',
+                            color: '#ffffff',
+                            confirmButtonColor: '#28a745'
+                        }).then(() => {
+                            location.reload(); // Recarrega a página após sucesso
+                        });
+                    } else {
+                        let errorMessage = 'Falha ao atualizar o package';
+                        if (data.message === 'Nome do package já existe') {
+                            errorMessage = 'Nome do package já existe';
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro',
+                            text: errorMessage,
+                            background: '#343a40',
+                            color: '#ffffff',
+                            confirmButtonColor: '#dc3545'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: 'Falha ao atualizar o package',
+                        background: '#343a40',
+                        color: '#ffffff',
+                        confirmButtonColor: '#dc3545'
+                    });
+                });
+            }
+        });
+
+        // Adiciona evento para validar a entrada de segundos restantes quando o campo perde o foco
+        document.getElementById('packageSeconds').addEventListener('blur', function() {
+            let value = parseInt(this.value, 10);
+            if (isNaN(value) || value < 60) {
+                this.value = 60;
+            } else if (value > 300) {
+                this.value = 300;
+            }
+        });
+
+
+        // Verifica se a versão está no formato correto em tempo real
+        document.getElementById('packageVersion').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1'); // Remove caracteres não numéricos e impede mais de um ponto
+        });
+
+        // Verifica se o link é um URL válido em tempo real
+        document.getElementById('packageLink').addEventListener('input', function() {
+            try {
+                new URL(this.value);
+                this.setCustomValidity('');
+            } catch (_) {
+                this.setCustomValidity('Digite um link válido');
+            }
+        });
+    });
+});
+
+
+
+
+
+
+            document.querySelectorAll('.delete-package').forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault(); // Evita o comportamento padrão do link
+
+                    const id = this.getAttribute('data-id');
+
+                    Swal.fire({
+                        title: 'Tem certeza?',
+                        text: "Você não poderá reverter isso!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sim, deletar!',
+                        cancelButtonText: 'Cancelar',
+                        background: '#343a40',
+                        color: '#fff'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch('/delete-package', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ id: id })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Deletado!',
+                                        text: 'Package deletado com sucesso.',
+                                        background: '#343a40',
+                                        color: '#ffffff',
+                                        confirmButtonColor: '#28a745'
+                                    }).then(() => {
+                                        location.reload(); // Recarrega a página após sucesso
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Erro',
+                                        text: 'Falha ao deletar o package',
+                                        background: '#343a40',
+                                        color: '#ffffff',
+                                        confirmButtonColor: '#dc3545'
+                                    });
+                                }
+                            })
+                            .catch(error => console.error('Erro:', error));
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll('.reset-keys').forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault(); // Evita o comportamento padrão do link
+
+                    const packageName = this.getAttribute('data-package');
+
+                    Swal.fire({
+                        title: 'Tem certeza?',
+                        text: "Isso resetará todas as keys deste package!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sim, resetar!',
+                        cancelButtonText: 'Cancelar',
+                        background: '#343a40',
+                        color: '#fff'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch('/reset-keys-package', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ package: packageName })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Resetado!',
+                                        text: 'As keys foram resetadas com sucesso.',
+                                        background: '#343a40',
+                                        color: '#ffffff',
+                                        confirmButtonColor: '#28a745'
+                                    }).then(() => {
+                                        location.reload(); // Recarrega a página após sucesso
+                                    });
+                                } else if (data.message === 'no-exist') {
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: 'Nenhuma Key Encontrada',
+                                        text: 'Não existem keys neste pacote.',
+                                        background: '#343a40',
+                                        color: '#ffffff',
+                                        confirmButtonColor: '#3085d6'
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Erro',
+                                        text: 'Falha ao resetar as keys',
+                                        background: '#343a40',
+                                        color: '#ffffff',
+                                        confirmButtonColor: '#dc3545'
+                                    });
+                                }
+                            })
+                            .catch(error => console.error('Erro:', error));
+                        }
+                    });
+                });
+            });
+
+document.querySelector('.btn-createpackage').addEventListener('click', function(event) {
+    event.preventDefault();
+
+    Swal.fire({
+        title: 'Criar Package',
+        html: `
+            <div style="text-align: center;">
+                <label for="newPackageName" style="display: block; margin-bottom: 3px; color: #aaa; font-size: 14px; text-align: left; width: 80%; margin: 0 auto;">Nome do Package</label>
+                <input id="newPackageName" type="text" placeholder="Digite um nome" class="swal2-input" style="width: 80%; box-sizing: border-box; background-color: #2c2f33; color: #fff; font-size: 14px; margin-bottom: 10px; padding: 5px; border-radius: 5px;">
+
+                <label for="newPackageVersion" style="display: block; margin-bottom: 3px; color: #aaa; font-size: 14px; text-align: left; width: 80%; margin: 0 auto;">Versão do Package</label>
+                <input id="newPackageVersion" type="text" placeholder="1.0" class="swal2-input" style="width: 80%; box-sizing: border-box; background-color: #2c2f33; color: #fff; font-size: 14px; margin-bottom: 10px; padding: 5px; border-radius: 5px;">
+
+                <label for="newPackageLink" style="display: block; margin-bottom: 3px; color: #aaa; font-size: 14px; text-align: left; width: 80%; margin: 0 auto;">Link da IPA</label>
+                <input id="newPackageLink" type="url" placeholder="Digite o link" class="swal2-input" style="width: 80%; box-sizing: border-box; background-color: #2c2f33; color: #fff; font-size: 14px; margin-bottom: 10px; padding: 5px; border-radius: 5px;">
+
+                <label for="newPackageSeconds" style="display: block; margin-bottom: 3px; color: #aaa; font-size: 14px; text-align: left; width: 80%; margin: 0 auto;">Segundos Restantes (mínimo 60, máximo 300)</label>
+                <input id="newPackageSeconds" type="number" min="60" max="300" value="" placeholder="60" class="swal2-input" style="width: 80%; box-sizing: border-box; background-color: #2c2f33; color: #fff; font-size: 14px; margin-bottom: 10px; padding: 5px; border-radius: 5px;">
+            </div>`,
+        showCancelButton: true,
+        confirmButtonText: 'Criar',
+        cancelButtonText: 'Cancelar',
+        background: '#343a40',
+        color: '#fff',
+        preConfirm: () => {
+            let name = document.getElementById('newPackageName').value;
+            const version = document.getElementById('newPackageVersion').value;
+            const link = document.getElementById('newPackageLink').value;
+            const remainingSeconds = parseInt(document.getElementById('newPackageSeconds').value, 10);
+            
+            // Remove espaços em branco no início e no final e substitui múltiplos espaços por um único espaço
+            name = name.trim().replace(/\s+/g, ' ');
+
+            // Verifica se a versão está no formato correto
+            const versionPattern = /^\d+(\.\d+)*$/;
+            if (!versionPattern.test(version)) {
+                Swal.showValidationMessage('A versão deve estar no formato número.ponto.número (ex: 1.0, 1.0.1, 1.0.0.1)');
+                return false;
+            }
+
+            // Verifica se o link é um URL válido
+            try {
+                new URL(link);
+            } catch (_) {
+                Swal.showValidationMessage('Digite um link válido');
+                return false;
+            }
+
+            if (remainingSeconds < 60 || remainingSeconds > 300 || isNaN(remainingSeconds)) {
+                Swal.showValidationMessage('Segundos Restantes deve estar entre 60 e 300');
+                return false;
+            }
+
+            return { name, version, link, remainingSeconds };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const { name, version, link, remainingSeconds } = result.value;
+            fetch('/create-package', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, version, link, remainingSeconds })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso',
+                        text: 'Package criado com sucesso',
+                        background: '#343a40',
+                        color: '#ffffff',
+                        confirmButtonColor: '#28a745'
+                    }).then(() => {
+                        location.reload(); // Recarrega a página após sucesso
+                    });
+                } else {
+                    let errorMessage = 'Falha ao criar o package';
+                    if (data.message === 'Nome do package já existe') {
+                        errorMessage = 'Nome do package já existe';
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: errorMessage,
+                        background: '#343a40',
+                        color: '#ffffff',
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+    });
+
+    // Adiciona evento para validar a entrada de segundos restantes quando o campo perde o foco
+    document.getElementById('newPackageSeconds').addEventListener('blur', function() {
+        let value = parseInt(this.value, 10);
+        if (isNaN(value) || value < 60) {
+            this.value = 60;
+        } else if (value > 300) {
+            this.value = 300;
+        }
+    });
+
+    // Verifica se a versão está no formato correto em tempo real
+    document.getElementById('newPackageVersion').addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1'); // Remove caracteres não numéricos e impede mais de um ponto
+    });
+
+    // Verifica se o link é um URL válido em tempo real
+    document.getElementById('newPackageLink').addEventListener('input', function() {
+        try {
+            new URL(this.value);
+            this.setCustomValidity('');
+        } catch (_) {
+            this.setCustomValidity('Digite um link válido');
+        }
+    });
+});
+
+
+    document.querySelectorAll('.create-notification').forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault(); // Evita o comportamento padrão do link
+
+            Swal.fire({
+                title: 'Criar Notificação',
+                html: `
+                    <div style="text-align: center;">
+                        <label for="notificationTitle" style="display: block; margin-bottom: 3px; color: #aaa; font-size: 14px; text-align: left; width: 80%; margin: 0 auto;">Título</label>
+                        <input id="notificationTitle" type="text" placeholder="Digite o título" class="swal2-input" style="width: 80%; box-sizing: border-box; background-color: #2c2f33; color: #fff; font-size: 14px; margin-bottom: 10px; padding: 5px; border-radius: 5px;">
+
+                                                <label for="notificationMessage" style="display: block; margin-bottom: 3px; color: #aaa; font-size: 14px; text-align: left; width: 80%; margin: 0 auto;">Mensagem</label>
+                        <input id="notificationMessage" type="text" placeholder="Digite a mensagem" class="swal2-input" style="width: 80%; box-sizing: border-box; background-color: #2c2f33; color: #fff; font-size: 14px; margin-bottom: 10px; padding: 5px; border-radius: 5px;">
+                    </div>`,
+                showCancelButton: true,
+                confirmButtonText: 'Enviar',
+                cancelButtonText: 'Cancelar',
+                background: '#343a40',
+                color: '#fff',
+                preConfirm: () => {
+                    const title = document.getElementById('notificationTitle').value;
+                    const message = document.getElementById('notificationMessage').value;
+
+                    if (!title || !message) {
+                        Swal.showValidationMessage('Título e mensagem são obrigatórios');
+                        return false;
+                    }
+
+                    return { title, message };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const { title, message } = result.value;
+                    fetch('/send-message', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ title, message })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sucesso',
+                                text: 'Notificação enviada com sucesso',
+                                background: '#343a40',
+                                color: '#ffffff',
+                                confirmButtonColor: '#28a745'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro',
+                                text: 'Falha ao enviar a notificação',
+                                background: '#343a40',
+                                color: '#ffffff',
+                                confirmButtonColor: '#dc3545'
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Erro:', error));
+                }
+            });
+        });
+    });
+
+
+
+
+        </script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('#key').select2({
+                    placeholder: "Selecione uma key",
+                    allowClear: true,
+                    width: '100%',  // Adiciona a largura para que o Select2 ocupe o espaço necessário
+                    language: {
+                        noResults: function() {
+                            return "Nenhum resultado encontrado";
+                        }
+                    }
+                });
+            });
+                          document.addEventListener('DOMContentLoaded', function () {
+                    const logoutButton = document.querySelector('.logout');
+                    logoutButton.addEventListener('click', function (event) {
+                        event.preventDefault(); // Impede o comportamento padrão do link
+
+                        Swal.fire({
+                            title: "Deseja realmente sair?",
+                            text: "Você será desconectado.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            cancelButtonText: "Cancelar",
+                            confirmButtonText: "Sim, sair",
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // O usuário confirmou o logout
+                                realizarLogout();
+                            } else {
+                                // O usuário cancelou o logout
+                                console.log("Logout cancelado");
+                            }
+                        });
+                    });
+
+                    function realizarLogout() {
+                        // Exibir o alerta "Auto close" com um timer
+                        let timerInterval;
+                        Swal.fire({
+                            title: "Terminar sessão",
+                            html: "Saindo em alguns segundos",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                                const timer = Swal.getPopup().querySelector("b");
+                                timerInterval = setInterval(() => {
+                                    timer.textContent = `${Swal.getTimerLeft()}`;
+                                }, 100);
+                            },
+                            willClose: () => {
+                                clearInterval(timerInterval);
+                                // Após o alerta ser fechado, realizar o logout
+                                window.location.href = "/logout"; // Redireciona para a página de logout
+                            }
+                        });
+                    }
+                });
+        </script>
+    </div>
+
+</body>
+
+</html>

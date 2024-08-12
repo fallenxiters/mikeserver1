@@ -1,0 +1,479 @@
+  <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="admins.css">
+    <link rel="icon" href="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/25D3BC22-D748-4DFF-B7DF-28D9F7910609.PNG?v=1716119018948"/>
+    <title>MikeServer - Ver Admins</title>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar close" id="sidebar">
+                <div class="profile">
+            <img src="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/1.png?v=1716788699094" alt="Profile Picture">
+            <div class="profile-info">
+<div class="name" style="text-align: left; white-space: nowrap; overflow: hidden;"><%= username %></div>
+<div class="credits" style="color: #808080; text-align: left; white-space: nowrap; overflow: hidden;">Creditos: <%= creditsAmount %></div>
+
+
+
+            </div>
+        </div>
+
+        <div class="side-menu">
+          <div class="section-title">Dashboard</div>
+          <li ><a href="/dashboard"><i class='bx bx-home'></i>Dashboard</a></li>
+            <div class="section-title">Utilizadores</div>
+            <ul>
+                <li ><a href="/register"><i class='bx bx-plus'></i>Criar Key</a></li>
+                <li  ><a href="/reset"><i class='bx bx-reset'></i>Resetar Key</a></li>
+                <li><a href="/remove"><i class='bx bx-minus'></i>Remover Key</a></li>
+                <li><a href="/users"><i class='bx bx-key'></i>Ver Keys</a></li>
+            </ul>
+            <div class="section-title">Administradores</div>
+            <ul>
+                                 <li><a href="/add-admins"><i class='bx bx-user-check'></i>Criar Admins</a></li>
+    <li><a href="/credits"><i class='bx bx-coin-stack'></i>Créditos</a></li>
+    <li  class="active" ><a href="/admins"><i class='bx bx-user'></i>Ver Admins</a></li>
+                <li><a href="/packages"><i class='bx bx-package'></i>Packages</a></li>
+            </ul>
+            <ul>
+              <div class="section-title">Outros</div>
+               <li class="logout"><a href="/logout" class="logout"><i class='bx bx-log-out-circle'></i>Sair</a></li>
+            </ul>
+        </div>
+    </div>
+    <!-- End of Sidebar -->
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Navbar -->
+        <nav>
+            <i class='bx bx-menu'></i>
+            <form action="#">
+                <div class="form-input">
+                    
+                    <button style="display: none;"><i></i></button>
+
+                </div>
+            </form>
+<a href="" class="profile">
+    <img src="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/1.png?v=1716788699094" style="width: 26px; height: 26px; border-radius: 50%;">
+    <span id="username"><%= username %></span>
+</a>
+        </nav>
+
+
+<main>
+    <div class="table-container">
+        <div class="header">
+            <h3>Admins</h3>
+        </div>
+        <div class="table-responsive">
+            <table class="acoes-table">
+                <thead>
+                    <tr>
+                      <th>ID</th>
+                        <th>Usuário</th>
+                        <th>Senha</th>
+                        <th>Nome</th>
+                        <th>Créditos</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% tableContent.forEach((user, index, array) => { %>
+                        <tr>
+                          <td data-label="ID"><%= user.id %></td>
+                            <td data-label="Usuário"><%= user.username %></td>
+                            <td data-label="Senha"><%= user.password %></td>
+                            <td data-label="Nome"><%= user.nome %></td>
+                            <td data-label="Créditos"><%= user.creditos %></td>
+                            <td data-label="Ações">
+                                <i class='bx bx-dots-vertical-rounded action-icon' onclick="toggleActionsMenu(event)" tabindex="0"></i>
+<div class="actions-menu">
+    <a href="" class="change-name" data-username="<%= user.username %>"><i class='bx bx-edit'></i>Mudar Nome</a>
+    <a href="" class="change-password" data-username="<%= user.username %>"><i class='bx bx-key'></i>Alterar Senha</a>
+    <a href="" class="delete" data-username="<%= user.username %>"><i class='bx bx-trash'></i>Deletar</a>
+    <a href="#" class="permissions" data-username="<%= user.username %>"
+       data-can-create-keys="<%= user.can_create_keys ? 1 : 0 %>"
+       data-can-reset-any-key="<%= user.can_reset_any_key ? 1 : 0 %>"
+       data-can-remove-any-key="<%= user.can_remove_any_key ? 1 : 0 %>"
+       data-can-view-any-key="<%= user.can_view_any_key ? 1 : 0 %>"
+       data-can-modify-credits="<%= user.can_modify_credits ? 1 : 0 %>"
+       data-can-view-admins="<%= user.can_view_admins ? 1 : 0 %>"
+       data-can-view-packages="<%= user.can_view_packages ? 1 : 0 %>"
+       data-can-create-admins="<%= user.can_create_admins ? 1 : 0 %>">
+       <i class='bx bx-shield'></i>Permissões
+    </a>
+</div>
+
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+          <script src="admins.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script>
+          
+          document.addEventListener("DOMContentLoaded", function() {
+    const permissionsLinks = document.querySelectorAll(".permissions");
+
+    // Event listener para abrir o modal de permissões
+    permissionsLinks.forEach(link => {
+        link.addEventListener("click", function(event) {
+            event.preventDefault();
+            const username = this.getAttribute("data-username");  // Mudança: Pegar o username correto
+            const canCreateKeys = this.getAttribute("data-can-create-keys") === '1';
+            const canResetAnyKey = this.getAttribute("data-can-reset-any-key") === '1';
+            const canRemoveAnyKey = this.getAttribute("data-can-remove-any-key") === '1';
+            const canViewAnyKey = this.getAttribute("data-can-view-any-key") === '1';
+            const canModifyCredits = this.getAttribute("data-can-modify-credits") === '1';
+            const canViewAdmins = this.getAttribute("data-can-view-admins") === '1';
+            const canCreateAdmins = this.getAttribute("data-can-create-admins") === '1';
+            const canViewPackages = this.getAttribute("data-can-view-packages") === '1';  // Adicionar a variável para can_view_packages
+
+            Swal.fire({
+                title: 'Permissões',
+                html:
+                    `<div class="swal-permissions">
+                        <label class="checkbox-label" for="canCreateKeys">
+                            <input type="checkbox" id="canCreateKeys" ${canCreateKeys ? 'checked' : ''}>
+                            Criar Keys sem gastar créditos
+                        </label>
+                        <label class="checkbox-label" for="canResetAnyKey">
+                            <input type="checkbox" id="canResetAnyKey" ${canResetAnyKey ? 'checked' : ''}>
+                            Resetar qualquer Key
+                        </label>
+                        <label class="checkbox-label" for="canRemoveAnyKey">
+                            <input type="checkbox" id="canRemoveAnyKey" ${canRemoveAnyKey ? 'checked' : ''}>
+                            Remover qualquer Key
+                        </label>
+                        <label class="checkbox-label" for="canViewAnyKey">
+                            <input type="checkbox" id="canViewAnyKey" ${canViewAnyKey ? 'checked' : ''}>
+                            Ver qualquer Key
+                        </label>
+                        <label class="checkbox-label" for="canModifyCredits">
+                            <input type="checkbox" id="canModifyCredits" ${canModifyCredits ? 'checked' : ''}>
+                            Adicionar ou remover créditos
+                        </label>
+                        <label class="checkbox-label" for="canViewAdmins">
+                            <input type="checkbox" id="canViewAdmins" ${canViewAdmins ? 'checked' : ''}>
+                            Ver Admins
+                        </label>
+                        <label class="checkbox-label" for="canCreateAdmins">
+                            <input type="checkbox" id="canCreateAdmins" ${canCreateAdmins ? 'checked' : ''}>
+                            Criar Admins
+                        </label>
+                        <label class="checkbox-label" for="canViewPackages">  <!-- Adicionar a checkbox para can_view_packages -->
+                            <input type="checkbox" id="canViewPackages" ${canViewPackages ? 'checked' : ''}>
+                            Ver Pacotes
+                        </label>
+                    </div>`,
+                showCancelButton: true,
+                confirmButtonText: 'Salvar',
+                showLoaderOnConfirm: true,
+                background: '#343a40',
+                color: '#ffffff',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                customClass: {
+                    container: 'swal-container',
+                    popup: 'swal-popup',
+                    title: 'swal-title',
+                    htmlContainer: 'swal-html-container',
+                    confirmButton: 'swal-confirm-button',
+                    cancelButton: 'swal-cancel-button'
+                },
+                preConfirm: () => {
+                    const formData = {
+                        username: username,  // Mudança: Incluir o username no formData
+                        canCreateKeys: document.getElementById('canCreateKeys').checked ? 1 : 0,
+                        canResetAnyKey: document.getElementById('canResetAnyKey').checked ? 1 : 0,
+                        canRemoveAnyKey: document.getElementById('canRemoveAnyKey').checked ? 1 : 0,
+                        canViewAnyKey: document.getElementById('canViewAnyKey').checked ? 1 : 0,
+                        canModifyCredits: document.getElementById('canModifyCredits').checked ? 1 : 0,
+                        canViewAdmins: document.getElementById('canViewAdmins').checked ? 1 : 0,
+                        canCreateAdmins: document.getElementById('canCreateAdmins').checked ? 1 : 0,
+                        canViewPackages: document.getElementById('canViewPackages').checked ? 1 : 0  // Incluir a variável para can_view_packages
+                    };
+
+                    return fetch("/permissions", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(formData)  // Mudança: Passar o formData incluindo o username
+                    })
+                    .then(response => response.json())
+                    .catch(error => Swal.showValidationMessage(`Request failed: ${error}`));
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso',
+                        text: 'Permissões atualizadas com sucesso',
+                        background: '#343a40',
+                        color: '#ffffff',
+                        confirmButtonColor: '#3085d6'
+                    }).then(() => location.reload());
+                }
+            });
+        });
+    });
+});
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const changeNameLinks = document.querySelectorAll(".change-name");
+            const changePasswordLinks = document.querySelectorAll(".change-password");
+            const deleteLinks = document.querySelectorAll(".delete");
+
+            changeNameLinks.forEach(link => {
+                link.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    const username = this.getAttribute("data-username");
+
+                    Swal.fire({
+                        title: 'Mudar Nome',
+                        input: 'text',
+                        inputPlaceholder: 'Digite o novo nome',
+                        showCancelButton: true,
+                        confirmButtonText: 'Mudar',
+                        showLoaderOnConfirm: true,
+                        background: '#343a40',
+                        color: '#ffffff',
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        preConfirm: (newName) => {
+                            return fetch("/change-name", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ username, newName })
+                            })
+                            .then(response => response.json())
+                            .catch(error => Swal.showValidationMessage(`Request failed: ${error}`));
+                        },
+                        allowOutsideClick: () => !Swal.isLoading()
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sucesso',
+                                text: 'Nome alterado com sucesso',
+                                background: '#343a40',
+                                color: '#ffffff',
+                                confirmButtonColor: '#3085d6'
+                            }).then(() => location.reload());
+                        }
+                    });
+                });
+            });
+
+            changePasswordLinks.forEach(link => {
+                link.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    const username = this.getAttribute("data-username");
+
+                    Swal.fire({
+                        title: 'Alterar Senha',
+                        input: 'password',
+                        inputPlaceholder: 'Digite a nova senha',
+                        showCancelButton: true,
+                        confirmButtonText: 'Alterar',
+                        showLoaderOnConfirm: true,
+                        background: '#343a40',
+                        color: '#ffffff',
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        preConfirm: (newPassword) => {
+                            return fetch("/change-password", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ username, newPassword })
+                            })
+                            .then(response => response.json())
+                            .catch(error => Swal.showValidationMessage(`Request failed: ${error}`));
+                        },
+                        allowOutsideClick: () => !Swal.isLoading()
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sucesso',
+                                text: 'Senha alterada com sucesso',
+                                background: '#343a40',
+                                color: '#ffffff',
+                                confirmButtonColor: '#3085d6'
+                            }).then(() => location.reload());
+                        }
+                    });
+                });
+            });
+
+            deleteLinks.forEach(link => {
+                link.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    const username = this.getAttribute("data-username");
+
+                    Swal.fire({
+                        title: 'Tem certeza?',
+                        text: "Você não poderá reverter isso!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Sim, deletar!',
+                        background: '#343a40',
+                        color: '#ffffff'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch("/delete-user", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ username })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Deletado!',
+                                        text: 'O vendedor foi deletado.',
+                                        background: '#343a40',
+                                        color: '#ffffff',
+                                        confirmButtonColor: '#3085d6'
+                                    }).then(() => location.reload());
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Erro!',
+                                        text: 'Falha ao deletar o vendedor.',
+                                        background: '#343a40',
+                                        color: '#ffffff',
+                                        confirmButtonColor: '#d33'
+                                    });
+                                }
+                            })
+                            .catch(error => Swal.fire({
+                                icon: 'error',
+                                title: 'Erro!',
+                                text: `Erro: ${error}`,
+                                background: '#343a40',
+                                color: '#ffffff',
+                                confirmButtonColor: '#d33'
+                            }));
+                        }
+                    });
+                });
+            });
+        });
+
+        function toggleActionsMenu(event) {
+            event.stopPropagation();
+            const menu = event.currentTarget.closest('td').querySelector('.actions-menu');
+            const allMenus = document.querySelectorAll('.actions-menu');
+            allMenus.forEach(m => {
+                if (m !== menu) {
+                    m.classList.remove('closing');
+                    m.style.display = 'none';
+                }
+            });
+            if (menu.style.display === 'block') {
+                menu.classList.add('closing');
+                menu.addEventListener('animationend', () => {
+                    menu.style.display = 'none';
+                    menu.classList.remove('closing');
+                }, { once: true });
+            } else {
+                menu.style.display = 'block';
+                const rect = event.currentTarget.getBoundingClientRect();
+                menu.style.top = `${rect.bottom + window.scrollY}px`;
+                menu.style.left = `${rect.left + window.scrollX - menu.offsetWidth}px`;
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            const allMenus = document.querySelectorAll('.actions-menu');
+            allMenus.forEach(menu => {
+                if (menu.style.display === 'block') {
+                    menu.classList.add('closing');
+                    menu.addEventListener('animationend', () => {
+                        menu.style.display = 'none';
+                        menu.classList.remove('closing');
+                    }, { once: true });
+                }
+            });
+        });
+
+        document.querySelectorAll('.actions-menu').forEach(menu => {
+            menu.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const logoutButton = document.querySelector('.logout');
+            logoutButton.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: "Deseja realmente sair?",
+                    text: "Você será desconectado.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonText: "Cancelar",
+                    confirmButtonText: "Sim, sair",
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    background: '#343a40',
+                    color: '#ffffff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        realizarLogout();
+                    } else {
+                        console.log("Logout cancelado");
+                    }
+                });
+            });
+
+            function realizarLogout() {
+                let timerInterval;
+                Swal.fire({
+                    title: "Terminar sessão",
+                    html: "Saindo em alguns segundos",
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        const timer = Swal.getPopup().querySelector("b");
+                        timerInterval = setInterval(() => {
+                            timer.textContent = `${Swal.getTimerLeft()}`;
+                        }, 100);
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval);
+                        window.location.href = "/logout";
+                    },
+                    background: '#343a40',
+                    color: '#ffffff'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="usuariosandroid.css">
+    <link rel="icon" type="image/png" href="https://cdn.glitch.global/8de4236d-ba37-4a2a-8722-55c426c37a80/mike.png?v=1699444686909" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .messages-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            max-height: 400px; /* Definindo altura máxima para a lista de mensagens */
+            overflow-y: auto; /* Adicionando barra de rolagem vertical */
+        }
+
+        .messages-list li {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Alinhando itens à esquerda */
+        }
+
+        .message-item {
+            display: flex;
+            flex-direction: row;
+            border-radius: 8px;
+            overflow: hidden;
+            padding: 15px;
+            align-items: center; /* Alinhando itens ao centro verticalmente */
+        }
+
+        .sender {
+            font-weight: bold;
+            margin-bottom: 5px;
+            margin-right: 10px; /* Adicionando margem à direita */
+        }
+
+        .message {
+            font-size: 16px;
+            line-height: 1.5;
+            flex-grow: 1; /* Ocupando todo o espaço disponível */
+        }
+
+        .delete-button {
+            display: none; /* Inicialmente ocultando o botão de excluir mensagem */
+            cursor: pointer;
+            color: red; /* Cor vermelha para o ícone de exclusão */
+            margin-left: 10px; /* Adicionando margem à esquerda */
+        }
+
+        /* Exibindo o botão de excluir quando o item de mensagem é selecionado */
+        .message-item.selected .delete-button {
+            display: inline;
+        }
+    </style>
+    <title>Mensagens da Comunidade</title>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar close" id="sidebar">
+        <a href="#" class="logo">
+            <i class='bx bx-code-alt'></i>
+            <div class="logo-name"><span>MIKE</span>iOS</div>
+        </a>
+        <ul class="side-menu">
+            <li><a href="/external"><i class='bx bx-arrow-back'></i>Voltar</a></li>
+            <li><a href="/registerexternal"><i class='bx bx-user-plus'></i>Registrar Usuário</a></li>
+            <li><a href="/removeexternal"><i class='bx bx-user-minus'></i>Remover Usuário</a></li>
+            <li><a href="/resetexternal"><i class='bx bx-reset'></i>Resetar Usuário</a></li>
+            <li><a href="/add-days-external"><i class='bx bx-calendar-plus'></i>Adicionar dias</a></li>
+            <li><a href="/usersexternal"><i class='bx bx-group'></i>Ver Usuários</a></li>
+<li class="active" ><a href="/comunidade"><i class='bx bx-chat'></i>Comunidade</a></li>
+<li><a href="/ban_user"><i class='bx bx-user-x'></i>Banir Usuário</a></li>
+
+          <% if (user.vendedor_nome === 'adm') { %>
+            <li><a href="/add-admins"><i class='bx bx-user-check'></i>Adicionar Admins</a></li>
+            <li><a href="/credits"><i class='bx bx-coin-stack'></i>Adicionar Créditos</a></li>
+            <li><a href="/admins"><i class='bx bx-user'></i>Ver Admins</a></li>
+            <% } %>
+
+
+        <ul class="side-menu">
+           
+
+
+<li>
+
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- End of Sidebar -->
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Navbar -->
+        <nav>
+            <i class='bx bx-menu'></i>
+            <form action="#">
+                <div class="form-input">
+                    <button style="display: none;"><i></i></button>
+                </div>
+            </form>
+<a href="" class="profile">
+    <img src="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/1.png?v=1716788699094" style="width: 26px; height: 26px; border-radius: 50%;">
+    <span id="username"><%= username %></span>
+</a>
+        </nav>
+        <!-- End of Navbar -->
+
+        <main>
+            <div class="bottom-data">
+                <div class="orders">
+                    <div class="header">
+                        <h3>Mensagens da Comunidade</h3>
+                    </div>
+
+                    <!-- Lista de Mensagens -->
+                    <ul class="messages-list" id="messages-list">
+                        <!-- As mensagens serão adicionadas aqui dinamicamente -->
+                    </ul>
+                </div>
+            </div>
+        </main>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+        <script src="reset.js"></script>
+        <script>
+            // Função para carregar mensagens do servidor e exibir na lista
+// Função para carregar mensagens do servidor e exibir na lista
+async function loadMessages() {
+    try {
+        const response = await fetch('/get_messages'); // Rota para obter as mensagens
+        const messages = await response.json();
+        const messagesList = document.getElementById('messages-list');
+        // Limpar a lista antes de adicionar novas mensagens
+        messagesList.innerHTML = '';
+        // Adiciona as mensagens ao final da lista
+        messages.forEach(message => {
+            const listItem = document.createElement('li');
+            const messageItem = document.createElement('div');
+            messageItem.classList.add('message-item');
+
+            const sender = document.createElement('div');
+            sender.classList.add('sender');
+            sender.textContent = message.remetente;
+
+            const messageContent = document.createElement('div');
+            messageContent.classList.add('message');
+            messageContent.textContent = message.mensagem;
+
+            const deleteButton = document.createElement('span');
+            deleteButton.classList.add('delete-button');
+            deleteButton.innerHTML = '<i class="bx bx-trash"></i>';
+            deleteButton.onclick = function() {
+                deleteMessage(message.id);
+            };
+            // Define o ID da mensagem como um atributo de dados no botão de exclusão
+            deleteButton.setAttribute('data-message-id', message.id);
+
+            // Verifica se o remetente não é @mikeios para mostrar o botão de exclusão
+            if (message.remetente !== '@mikeios') {
+                messageItem.classList.add('selected');
+            }
+
+            messageItem.appendChild(sender);
+            messageItem.appendChild(messageContent);
+            messageItem.appendChild(deleteButton);
+
+            listItem.appendChild(messageItem);
+            messagesList.appendChild(listItem);
+        });
+        // Após carregar as mensagens, rolar para o final da lista
+        messagesList.scrollTop = messagesList.scrollHeight;
+    } catch (error) {
+        console.error('Erro ao carregar mensagens:', error);
+    }
+}
+
+
+// Função para excluir mensagem
+async function deleteMessage(messageId) {
+    try {
+        const response = await fetch(`/delete_message/${messageId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            // Se a exclusão for bem-sucedida, recarrega as mensagens
+            loadMessages();
+        } else {
+            console.error('Erro ao excluir mensagem:', response.status);
+        }
+    } catch (error) {
+        console.error('Erro ao excluir mensagem:', error);
+    }
+}
+
+
+            // Carregar as mensagens ao carregar a página e a cada 5 segundos
+            window.onload = function() {
+                loadMessages(); // Carregar mensagens quando a página carregar
+                setInterval(loadMessages, 5000); // Chamar a função loadMessages a cada 5 segundos (5000 milissegundos)
+            };
+        </script>
+    </div>
+</body>
+
+</html>

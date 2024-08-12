@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="remove_user.css">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link rel="icon" href="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/25D3BC22-D748-4DFF-B7DF-28D9F7910609.PNG?v=1716119018948"/>
+    <title>MikeServer - Remover Key</title>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar close" id="sidebar">
+                <div class="profile">
+            <img src="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/1.png?v=1716788699094" alt="Profile Picture">
+            <div class="profile-info">
+<div class="name" style="text-align: left; white-space: nowrap; overflow: hidden;"><%= username %></div>
+<div class="credits" style="color: #808080; text-align: left; white-space: nowrap; overflow: hidden;">Creditos: <%= creditsAmount %></div>
+
+
+
+            </div>
+        </div>
+
+<div class="side-menu">
+  <div class="section-title">Dashboard</div>
+  <ul>
+    <li><a href="/dashboard"><i class='bx bx-home'></i>Dashboard</a></li>
+  </ul>
+  
+  <div class="section-title">Utilizadores</div>
+  <ul>
+    <li><a href="/register"><i class='bx bx-plus'></i>Criar Key</a></li>
+    <li><a href="/reset"><i class='bx bx-reset'></i>Resetar Key</a></li>
+    <li  class="active" ><a href="/remove"><i class='bx bx-minus'></i>Remover Key</a></li>
+    <li><a href="/users"><i class='bx bx-key'></i>Ver Keys</a></li>
+  </ul>
+  
+  <% if (user.can_create_admins || user.can_modify_credits || user.can_view_admins || user.can_view_packages) { %>
+    <div class="section-title">Administradores</div>
+    <ul>
+      <% if (user.can_create_admins) { %>
+        <li><a href="/add-admins"><i class='bx bx-user-check'></i>Criar Admins</a></li>
+      <% } %>
+      <% if (user.can_modify_credits) { %>
+        <li><a href="/credits"><i class='bx bx-coin-stack'></i>Créditos</a></li>
+      <% } %>
+      <% if (user.can_view_admins) { %>
+        <li><a href="/admins"><i class='bx bx-user'></i>Ver Admins</a></li>
+      <% } %>
+      <% if (user.can_view_packages) { %>
+        <li><a href="/packages"><i class='bx bx-package'></i>Packages</a></li>
+      <% } %>
+    </ul>
+  <% } %>
+
+  <div class="section-title">Outros</div>
+  <ul>
+    <li class="logout"><a href="/logout" class="logout"><i class='bx bx-log-out-circle'></i>Sair</a></li>
+  </ul>
+</div>
+
+
+        </div>
+    </div>
+    <!-- End of Sidebar -->
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Navbar -->
+        <nav>
+            <i class='bx bx-menu'></i>
+            <form action="#">
+                <div class="form-input">
+                    <button style="display: none;"><i></i></button>
+                </div>
+            </form>
+<a href="" class="profile">
+    <img src="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/1.png?v=1716788699094" style="width: 26px; height: 26px; border-radius: 50%;">
+    <span id="username"><%= username %></span>
+</a>
+        </nav>
+
+        <!-- End of Navbar -->
+
+        <main>
+            <div class="bottom-data">
+                <div class="orders">
+                    <div class="header">
+                        <i class='bx bx-reset'></i>
+                        <h3>Remover Key</h3>
+                    </div>
+                    <!-- Seu formulário aqui -->
+                    <form action="/remove_key" method="POST" class="tight-form">
+                        <div class="form-group">
+                            <label for="key">Key:</label>
+                            <select id="key" name="key" required>
+                                <option></option> <!-- Placeholder para Select2 -->
+                                <% keys.forEach(key => { %>
+                                    <option value="<%= key.key %>"><%= key.key %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="button-container">
+                            <input type="submit" value="Remover">
+                        </div>
+                    </form>
+                    <!-- Fim do formulário -->
+                </div>
+            </div>
+        </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+          <script src="remove_user.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('#key').select2({
+                    placeholder: "Selecione uma key",
+                    allowClear: true,
+                    width: '100%'  // Adiciona a largura para que o Select2 ocupe o espaço necessário
+                });
+            });
+                          document.addEventListener('DOMContentLoaded', function () {
+                    const logoutButton = document.querySelector('.logout');
+                    logoutButton.addEventListener('click', function (event) {
+                        event.preventDefault(); // Impede o comportamento padrão do link
+
+                        Swal.fire({
+                            title: "Deseja realmente sair?",
+                            text: "Você será desconectado.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            cancelButtonText: "Cancelar",
+                            confirmButtonText: "Sim, sair",
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // O usuário confirmou o logout
+                                realizarLogout();
+                            } else {
+                                // O usuário cancelou o logout
+                                console.log("Logout cancelado");
+                            }
+                        });
+                    });
+
+                    function realizarLogout() {
+                        // Exibir o alerta "Auto close" com um timer
+                        let timerInterval;
+                        Swal.fire({
+                            title: "Terminar sessão",
+                            html: "Saindo em alguns segundos",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                                const timer = Swal.getPopup().querySelector("b");
+                                timerInterval = setInterval(() => {
+                                    timer.textContent = `${Swal.getTimerLeft()}`;
+                                }, 100);
+                            },
+                            willClose: () => {
+                                clearInterval(timerInterval);
+                                // Após o alerta ser fechado, realizar o logout
+                                window.location.href = "/logout"; // Redireciona para a página de logout
+                            }
+                        });
+                    }
+                });
+        </script>
+    </div>
+</body>
+</html>

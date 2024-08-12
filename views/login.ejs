@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://db.onlinewebfonts.com/c/5f7b48402c799e31471def291fe9b47e?family=Francker+W01+Condensed+Light" rel="stylesheet">
+    <link rel="icon" href="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/25D3BC22-D748-4DFF-B7DF-28D9F7910609.PNG?v=1716119018948"/>
+    <title>MikeServer - Login</title>
+    <link rel="stylesheet" href="login.css">
+
+</head>
+<body>
+
+    <div class="loading-screen" id="loading-screen">
+        <img src="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/25D3BC22-D748-4DFF-B7DF-28D9F7910609.PNG?v=1716119018948" alt="Logo MikeServer" />
+        <div class="spinner"></div>
+    </div>
+
+
+    <div class="login-container" id="main-content">
+        <h2>
+            <img src="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/25D3BC22-D748-4DFF-B7DF-28D9F7910609.PNG?v=1716119018948" alt="Logo MikeServer">
+            Bem vindo ao MikeServer!
+        </h2>
+        <div class="spacer"></div>
+        <form id="login-form" action="/login" method="post" onsubmit="return validateForm()">
+            <div class="floating-label">
+                <input type="text" name="username" id="username" placeholder="Usuário" required>
+            </div>
+            <div class="floating-label">
+                <input type="password" name="password" id="password" placeholder="Senha" required>
+            </div>
+            <button type="submit" id="login-button">
+                <span>Entrar</span>
+                <div id="spinner" class="spinner1" style="display: none;"></div>
+            </button>
+            <div class="spacer"></div>
+            <div id="error-message" class="error-message"></div>
+        </form>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="login.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function() {
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('main-content').style.visibility = 'visible';
+            }, 1500);
+
+            const errorMessageContainer = document.getElementById('error-message');
+            const loginMessage = '<%= loginMessage || "" %>';
+
+            if (loginMessage) {
+                errorMessageContainer.innerText = loginMessage;
+                errorMessageContainer.style.color = 'red';
+                errorMessageContainer.style.marginTop = '0px'; // Ajuste conforme necessário
+            }
+        });
+
+        function validateForm() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+            const loginButton = document.getElementById('login-button');
+            const spinner = document.getElementById('spinner');
+
+            if (username === '' || password === '') {
+                errorMessage.innerText = 'Preencha todos os campos.';
+                errorMessage.style.color = 'red';
+                return false;
+            } else {
+                errorMessage.innerText = '';
+                // Esconde o texto do botão e mostra o spinner
+                loginButton.querySelector('span').style.display = 'none';
+                spinner.style.display = 'inline-block';
+
+                setTimeout(() => {
+                    document.getElementById('login-form').submit();
+                }, 1500);
+
+                return false; // Evita o envio imediato do formulário
+            }
+        }
+
+        function showMessage() {
+            // Mostra a mensagem sobre o botão "Registrar"
+            const registrationMessage = document.getElementById('registrationMessage');
+            registrationMessage.style.display = 'block';
+        }
+    </script>
+  
+    <div id="particles-js"></div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 50,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ffffff"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    },
+                    "image": {
+                        "src": "img/github.svg",
+                        "width": 100,
+                        "height": 100
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ffffff",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": true,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
+</body>
+</html>

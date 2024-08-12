@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floating Element</title>
+    <style>
+body{
+    widht: 100%;
+    background-color: transparent;
+}
+        #floatingElement {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="floatingElement"></div>
+    <script>
+        const floatingElement = document.getElementById('floatingElement');
+        let offsetX, offsetY, initialTouchX, initialTouchY, isDragging = false;
+
+        floatingElement.addEventListener('touchstart', function(e) {
+            isDragging = true;
+            const touch = e.touches[0];
+            initialTouchX = touch.clientX;
+            initialTouchY = touch.clientY;
+            const rect = floatingElement.getBoundingClientRect();
+            offsetX = initialTouchX - rect.left;
+            offsetY = initialTouchY - rect.top;
+        });
+
+        document.addEventListener('touchmove', function(e) {
+            if (isDragging) {
+                const touch = e.touches[0];
+                const newX = touch.clientX - offsetX;
+                const newY = touch.clientY - offsetY;
+                floatingElement.style.left = `${newX}px`;
+                floatingElement.style.top = `${newY}px`;
+            }
+        });
+
+        document.addEventListener('touchend', function() {
+            isDragging = false;
+        });
+    </script>
+</body>
+</html>

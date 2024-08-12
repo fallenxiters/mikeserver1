@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="usuarios.css">
+    <link rel="icon" href="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/25D3BC22-D748-4DFF-B7DF-28D9F7910609.PNG?v=1716119018948"/>
+    <title>MikeServer - Ver Keys</title>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar close" id="sidebar">
+        <div class="profile">
+            <img src="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/1.png?v=1716788699094" alt="Profile Picture">
+            <div class="profile-info">
+                <div class="name" style="text-align: left; white-space: nowrap; overflow: hidden;"><%= username %></div>
+                <div class="credits" style="color: #808080; text-align: left; white-space: nowrap; overflow: hidden;">Creditos: <%= creditsAmount %></div>
+            </div>
+        </div>
+<div class="side-menu">
+  <div class="section-title">Dashboard</div>
+  <ul>
+    <li><a href="/dashboard"><i class='bx bx-home'></i>Dashboard</a></li>
+  </ul>
+  
+  <div class="section-title">Utilizadores</div>
+  <ul>
+    <li><a href="/register"><i class='bx bx-plus'></i>Criar Key</a></li>
+    <li><a href="/reset"><i class='bx bx-reset'></i>Resetar Key</a></li>
+    <li><a href="/remove"><i class='bx bx-minus'></i>Remover Key</a></li>
+    <li class="active" ><a href="/users"><i class='bx bx-key'></i>Ver Keys</a></li>
+  </ul>
+  
+  <% if (user.can_create_admins || user.can_modify_credits || user.can_view_admins || user.can_view_packages) { %>
+    <div class="section-title">Administradores</div>
+    <ul>
+      <% if (user.can_create_admins) { %>
+        <li><a href="/add-admins"><i class='bx bx-user-check'></i>Criar Admins</a></li>
+      <% } %>
+      <% if (user.can_modify_credits) { %>
+        <li><a href="/credits"><i class='bx bx-coin-stack'></i>Créditos</a></li>
+      <% } %>
+      <% if (user.can_view_admins) { %>
+        <li><a href="/admins"><i class='bx bx-user'></i>Ver Admins</a></li>
+      <% } %>
+      <% if (user.can_view_packages) { %>
+        <li><a href="/packages"><i class='bx bx-package'></i>Packages</a></li>
+      <% } %>
+    </ul>
+  <% } %>
+
+  <div class="section-title">Outros</div>
+  <ul>
+    <li class="logout"><a href="/logout" class="logout"><i class='bx bx-log-out-circle'></i>Sair</a></li>
+  </ul>
+</div>
+
+
+        </div>
+    </div>
+    <!-- End of Sidebar -->
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Navbar -->
+        <nav>
+            <i class='bx bx-menu'></i>
+            <form action="#">
+                <div class="form-input">
+                    <button style="display: none;"><i></i></button>
+                </div>
+            </form>
+<a href="" class="profile">
+    <img src="https://cdn.glitch.global/09fd4885-adbc-407f-a3b9-d39b3113acb7/1.png?v=1716788699094" style="width: 26px; height: 26px; border-radius: 50%;">
+    <span id="username"><%= username %></span>
+</a>
+        </nav>
+        <!-- End of Navbar -->
+
+        <main>
+            <div class="table-container">
+                <div class="header">
+                    <h3>Keys</h3>
+                </div>
+                <div class="table-responsive">
+                    <div class="btn-container">
+                        <button class="btn-delete" id="deleteExpiredKeys">Remover expiradas</button>
+                        <button class="btn-reset" id="resetAll">Resetar todas</button>
+                        <div class="search-container">
+                            <input type="text" id="searchInput" placeholder="Pesquisar keys..." onkeyup="searchKeys()">
+                            <button id="clearSearch" onclick="clearSearch()">×</button>
+                        </div>
+                    </div>
+                    <table class="acoes-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Key</th>
+                                <th>Duração</th>
+                                <th>Validade</th>
+                                <th>Acesso</th>
+                                <th>Package</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Corpo da tabela será preenchido por JavaScript -->
+                        </tbody>
+                    </table>
+                    <div class="pagination-container">
+                        <div class="items-per-page">
+                            <label for="keysPerPage">Keys por página:</label>
+                            <select id="keysPerPage" onchange="changeKeysPerPage()">
+                              <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div class="pagination" id="pagination">
+                            <!-- Botões de paginação serão inseridos aqui pelo JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+        <script src="reset.js"></script>
+<script>
+const tableContent = <%- JSON.stringify(tableContent) %>;
+
+let currentPage = 1;
+let keysPerPage = 5;
+let filteredContent = tableContent;
+
+function changeKeysPerPage() {
+    keysPerPage = parseInt(document.getElementById('keysPerPage').value, 10);
+    currentPage = 1;
+    renderTable();
+}
+
+function searchKeys() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    filteredContent = tableContent.filter(user => user.key.toLowerCase().includes(searchTerm));
+    currentPage = 1;
+    renderTable();
+    toggleClearButton();
+}
+
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    searchKeys();
+}
+
+function toggleClearButton() {
+    const searchInput = document.getElementById('searchInput');
+    const clearButton = document.getElementById('clearSearch');
+    if (searchInput.value) {
+        clearButton.style.display = 'inline';
+    } else {
+        clearButton.style.display = 'none';
+    }
+}
+
+function copyToClipboard(key) {
+    navigator.clipboard.writeText(key).then(() => {
+        alert('Key copiada para o clipboard: ' + key);
+    }, (err) => {
+        console.error('Erro ao copiar a key: ', err);
+    });
+}
+
+function renderTable() {
+    const start = (currentPage - 1) * keysPerPage;
+    const end = start + keysPerPage;
+    const visibleKeys = filteredContent.slice(start, end);
+
+    const tableBody = document.querySelector('.acoes-table tbody');
+    tableBody.innerHTML = '';
+
+    if (visibleKeys.length === 0) {
+        const noKeysMessage = document.createElement('tr');
+        noKeysMessage.innerHTML = `
+            <td colspan="8" style="text-align: center;">Nenhuma key encontrada</td>
+        `;
+        tableBody.appendChild(noKeysMessage);
+    } else {
+        visibleKeys.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td data-label="ID">${user.id}</td>
+                <td data-label="Key">
+                    ${user.key}
+                    <i class='bx bx-copy' style="color: white; cursor: pointer;" onclick="copyToClipboard('${user.key}')" ontouchstart="copyToClipboard('${user.key}')"></i>
+                </td>
+                <td data-label="Duração">${user.length} DIAS</td>
+                <td data-label="Validade"><span class="${user.expirydate === 'Expirado' ? 'expired' : user.expirydate === 'Pendente' ? 'pending' : ''}">${user.expirydate}</span></td>
+                <td data-label="Acesso"><span class="${user.udid === '1/1' ? 'red-text' : ''}">${user.udid}</span></td>
+                <td data-label="Package">${user.package}</td>
+                <td data-label="Status"><span class="${user.status === 0 ? 'ativo' : 'desativado'}">${user.status === 0 ? 'Ativo' : 'Desativado'}</span></td>
+                <td data-label="Ações">
+                    <i class='bx bx-dots-vertical-rounded action-icon' onclick="toggleActionsMenu(event)" tabindex="0"></i>
+                    <div class="actions-menu">
+                        <a href="" class="change-status" data-key="${user.key}"><i class='bx bx-pause'></i>Mudar Status</a>
+                        <a href="" class="reset-key" data-key="${user.key}"><i class='bx bx-reset'></i>Resetar Key</a>
+                        <a href="" class="delete-key" data-key="${user.key}"><i class='bx bx-trash'></i>Deletar Key</a>
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    renderPagination();
+    attachEventListeners(); // Reatribui os event listeners após renderizar a tabela
+}
+
+function renderPagination() {
+    const paginationDiv = document.getElementById('pagination');
+    paginationDiv.innerHTML = '';
+
+    const totalPages = Math.ceil(filteredContent.length / keysPerPage);
+
+    const backButton = document.createElement('button');
+    backButton.innerHTML = '&lt;';
+    backButton.classList.add('pagination-button');
+    backButton.disabled = currentPage === 1;
+    backButton.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+        }
+    };
+    paginationDiv.appendChild(backButton);
+
+    const pageInfo = document.createElement('span');
+    pageInfo.textContent = `${currentPage} de ${totalPages}`;
+    pageInfo.classList.add('page-info');
+    paginationDiv.appendChild(pageInfo);
+
+    const nextButton = document.createElement('button');
+    nextButton.innerHTML = '&gt;';
+    nextButton.classList.add('pagination-button');
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.onclick = () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+        }
+    };
+    paginationDiv.appendChild(nextButton);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderTable();
+    toggleClearButton();
+});
+
+function toggleActionsMenu(event) {
+    event.stopPropagation();
+    const menu = event.currentTarget.closest('td').querySelector('.actions-menu');
+    const allMenus = document.querySelectorAll('.actions-menu');
+    allMenus.forEach(m => {
+        if (m !== menu) {
+            m.classList.remove('closing');
+            m.style.display = 'none';
+        }
+    });
+
+    if (menu.style.display === 'block') {
+        menu.classList.add('closing');
+        menu.addEventListener('animationend', () => {
+            menu.style.display = 'none';
+            menu.classList.remove('closing');
+        }, { once: true });
+    } else {
+        menu.style.display = 'block';
+        const rect = event.currentTarget.getBoundingClientRect();
+        menu.style.top = `${rect.bottom + window.scrollY}px`;
+        menu.style.left = `${rect.left + window.scrollX - menu.offsetWidth}px`;
+
+        // Ajustar a altura do documento se necessário
+        const menuRect = menu.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        if (menuRect.bottom > viewportHeight) {
+            const additionalHeight = menuRect.bottom - viewportHeight + 10; // 10px de buffer
+            document.body.style.height = `${documentHeight + additionalHeight}px`;
+        }
+    }
+}
+
+document.addEventListener('click', function(event) {
+    const allMenus = document.querySelectorAll('.actions-menu');
+    allMenus.forEach(menu => {
+        if (menu.style.display === 'block') {
+            menu.classList.add('closing');
+            menu.addEventListener('animationend', () => {
+                menu.style.display = 'none';
+                menu.classList.remove('closing');
+            }, { once: true });
+        }
+    });
+});
+
+document.querySelectorAll('.actions-menu').forEach(menu => {
+    menu.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+});
+
+function attachEventListeners() {
+    const changeStatusLinks = document.querySelectorAll(".change-status");
+    const resetKeyLinks = document.querySelectorAll(".reset-key");
+    const deleteKeyLinks = document.querySelectorAll(".delete-key");
+
+    changeStatusLinks.forEach(link => {
+        link.addEventListener("click", function(event) {
+            event.preventDefault(); // Evita o comportamento padrão do link
+
+            const userKey = this.getAttribute("data-key");
+            const statusCell = this.closest("tr").querySelector("[data-label='Status'] span");
+            const actionsMenu = this.closest(".actions-menu");
+
+            // Enviar a key para o servidor
+            fetch("/change-status", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ key: userKey })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+
+                    // Fechar o menu de ações
+                    actionsMenu.classList.add('closing');
+                    actionsMenu.addEventListener('animationend', () => {
+                        actionsMenu.style.display = 'none';
+                        actionsMenu.classList.remove('closing');
+                    }, { once: true });
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso',
+                        text: 'Status mudado com sucesso',
+                        background: '#343a40',
+                        color: '#ffffff',
+                        confirmButtonColor: '#28a745'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // Recarrega a página após clicar em "OK"
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: 'Falha ao mudar o status',
+                        background: '#343a40',
+                        color: '#ffffff',
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            })
+            .catch(error => console.error("Erro:", error));
+        });
+    });
+
+    resetKeyLinks.forEach(link => {
+        link.addEventListener("click", function(event) {
+            event.preventDefault(); // Evita o comportamento padrão do link
+
+            const userKey = this.getAttribute("data-key");
+            const udidCell = this.closest("tr").querySelector("[data-label='Acesso'] span");
+            const actionsMenu = this.closest(".actions-menu");
+
+            // Enviar a key para o servidor
+            fetch("/reset-key", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ key: userKey })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Fechar o menu de ações
+                    actionsMenu.classList.add('closing');
+                    actionsMenu.addEventListener('animationend', () => {
+                        actionsMenu.style.display = 'none';
+                        actionsMenu.classList.remove('closing');
+                    }, { once: true });
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso',
+                        text: 'Key resetada com sucesso',
+                        background: '#343a40',
+                        color: '#ffffff',
+                        confirmButtonColor: '#28a745'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // Recarrega a página após clicar em "OK"
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: 'Falha ao resetar a key',
+                        background: '#343a40',
+                        color: '#ffffff',
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            })
+            .catch(error => console.error("Erro:", error));
+        });
+    });
+
+    deleteKeyLinks.forEach(link => {
+        link.addEventListener("click", function(event) {
+            event.preventDefault(); // Evita o comportamento padrão do link
+
+            const userKey = this.getAttribute("data-key");
+            const row = this.closest("tr");
+            const actionsMenu = this.closest(".actions-menu");
+
+            // Confirmar antes de deletar
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: "Você realmente deseja deletar esta key?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Deletar',
+                background: '#343a40',
+                color: '#ffffff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Enviar a key para o servidor
+                    fetch("/delete-key", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ key: userKey })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+
+                            // Fechar o menu de ações
+                            actionsMenu.classList.add('closing');
+                            actionsMenu.addEventListener('animationend', () => {
+                                actionsMenu.style.display = 'none';
+                                actionsMenu.classList.remove('closing');
+                            }, { once: true });
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sucesso',
+                                text: 'Key deletada com sucesso',
+                                background: '#343a40',
+                                color: '#ffffff',
+                                confirmButtonColor: '#28a745'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    location.reload(); // Recarrega a página após clicar em "OK"
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro',
+                                text: 'Falha ao deletar a key',
+                                background: '#343a40',
+                                color: '#ffffff',
+                                confirmButtonColor: '#dc3545'
+                            });
+                        }
+                    })
+                    .catch(error => console.error("Erro:", error));
+                }
+            });
+        });
+    });
+}
+
+document.getElementById('deleteExpiredKeys').addEventListener('click', () => {
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: "Você realmente deseja deletar todas as keys expiradas?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Deletar',
+        background: '#343a40',
+        color: '#ffffff'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/delete-expired-keys', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // Retorna a resposta como JSON se estiver tudo certo
+                } else {
+                    throw new Error('Erro ao deletar as keys expiradas');
+                }
+            })
+            .then(data => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso',
+                    text: `Todas as ${data.deletedCount} keys expiradas foram deletadas.`,
+                    background: '#343a40',
+                    color: '#ffffff',
+                    confirmButtonColor: '#28a745'
+                }).then(() => {
+                    location.reload(); // Recarrega a página após clicar em "OK"
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao deletar as keys expiradas:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Houve um problema ao deletar as keys expiradas.',
+                    background: '#343a40',
+                    color: '#ffffff',
+                    confirmButtonColor: '#dc3545'
+                });
+            });
+        }
+    });
+});
+
+// Função para resetar tudo
+document.getElementById('resetAll').addEventListener('click', () => {
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: "Você realmente deseja resetar todas as keys?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ffc107',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Resetar',
+        background: '#343a40',
+        color: '#ffffff'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/reset-all', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso',
+                        text: 'Todas as keys foram resetadas.',
+                        background: '#343a40',
+                        color: '#ffffff',
+                        confirmButtonColor: '#28a745'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // Recarrega a página após clicar em "OK"
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: 'Houve um problema ao resetar todas as keys.',
+                        background: '#343a40',
+                        color: '#ffffff',
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            });
+        }
+    });
+});
+</script>
+
+    </div>
+</body>
+</html>
